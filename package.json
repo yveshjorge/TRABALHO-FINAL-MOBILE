@@ -1,22 +1,39 @@
 {
   "name": "lexica-mobile",
+  "description": "Aplicativo React Native offline-first para gestão de traduções",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.ts",
   "dependencies": {
+    "@firebase/auth": "^1.13.9",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~58.0.23",
+    "expo-crypto": "~58.0.7",
+    "expo-network": "~58.0.4",
+    "expo-sqlite": "~58.0.15",
     "expo-status-bar": "~58.0.4",
+    "fflate": "^0.8.3",
+    "firebase": "^13.2.0",
     "react": "19.3.0",
-    "react-native": "0.88.1"
+    "react-native": "0.88.1",
+    "saxes": "^6.0.0"
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
     "typescript": "~6.0.3"
   },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.7",
+    "glob": "^14.0.4",
+    "minimatch": "^11.0.5"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "check": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "export:android": "expo export --platform android"
   },
   "private": true
 }
