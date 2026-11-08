@@ -1,4 +1,4 @@
-# Léxica Mobile
+# TRABALHO-FINAL-MOBILE — Léxica Mobile
 
 Aplicativo React Native para profissionais de tradução. O projeto reaproveita o domínio de glossários, termos, idiomas e memórias OPUS do trabalho de Métodos Ágeis e acrescenta os requisitos mobile do Projeto N2.
 
@@ -69,3 +69,4 @@ O OPUS e o MyMemory precisam de internet. A consulta MyMemory tem limite de 500 
     npm run check
     npm test
     npm run export:android
+
