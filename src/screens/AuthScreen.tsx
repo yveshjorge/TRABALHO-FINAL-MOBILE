@@ -74,8 +74,8 @@ export function AuthScreen({
       ) : null}
       <Card style={styles.demoCard}>
         <Eyebrow>PARA TESTAR A INTERFACE</Eyebrow>
-        <Text style={styles.demoText}>A demonstração local usa SQLite no aparelho e não cria uma conta nem envia os dados para a nuvem.</Text>
-        <Button kind="quiet" label="Abrir demonstração local" onPress={onDemo} />
+        <Text style={styles.demoText}>Veja um projeto, um glossário e três traduções jurídicas de exemplo. Os registros ficam no SQLite deste aparelho e não são enviados à nuvem.</Text>
+        <Button kind="quiet" label="Abrir demonstração com exemplos" onPress={onDemo} />
       </Card>
       <Text style={styles.privacy}>MyMemory só recebe uma frase quando você escolhe consultar a API. Seus registros ficam no dispositivo e na sua conta Firestore.</Text>
     </ScrollView>

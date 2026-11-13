@@ -10,6 +10,7 @@ import { Button, Notice } from './src/components/UI';
 import { auth, cloud, firebaseConfigured } from './src/firebase';
 import { entityDefinitions } from './src/definitions';
 import { synchronize } from './src/sync';
+import { ensureDemoData } from './src/database';
 import { theme } from './src/theme';
 import type { EntityType } from './src/types';
 
@@ -89,10 +90,21 @@ export default function App() {
     };
   }, [account?.uid, account?.demo]);
 
-  function openDemo() {
+  async function openDemo() {
+    let examplesLoaded = false;
+    let seedReady = true;
+    try {
+      examplesLoaded = await ensureDemoData('demo-local');
+    } catch {
+      seedReady = false;
+    }
     setAccount({ uid: 'demo-local', email: 'Demonstração local', demo: true });
     setSyncState('local');
-    setSyncMessage('Modo demonstração: os registros ficam apenas neste aparelho.');
+    setSyncMessage(seedReady
+      ? examplesLoaded
+        ? 'Amostra carregada no SQLite: um projeto, um glossário e três termos jurídicos. Você pode editar ou excluir os exemplos.'
+        : 'Demonstração local aberta. Os dados que já estavam neste aparelho foram preservados.'
+      : 'Os exemplos não puderam ser carregados; você ainda pode cadastrar dados manualmente.');
   }
 
   async function exitAccount() {
@@ -139,7 +151,7 @@ export default function App() {
         <Text style={styles.syncLabel}>{account.demo ? 'Demonstração local' : activeLabel}</Text>
         {!account.demo ? <Pressable accessibilityRole="button" disabled={syncState === 'syncing'} onPress={() => void runSync()}><Text style={styles.syncAction}>{syncState === 'syncing' ? '…' : 'Sincronizar'}</Text></Pressable> : null}
       </View>
-      {account.demo ? <View style={styles.demoBanner}><Text style={styles.demoBannerText}>Modo local: não usa Firebase Auth nem envia registros à nuvem.</Text></View> : null}
+      {account.demo ? <View style={styles.demoBanner}><Text style={styles.demoBannerText}>Conteúdo de exemplo, somente neste aparelho. Este modo não usa Firebase Auth nem sincroniza com a nuvem.</Text></View> : null}
       {syncMessage ? <View style={styles.message}><Notice tone={syncState === 'error' ? 'error' : syncState === 'synced' ? 'success' : 'info'}>{syncMessage}</Notice></View> : null}
       <View style={styles.content}>
         {tab === 'opus' ? <OpusScreen /> : (

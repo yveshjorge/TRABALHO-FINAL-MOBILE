@@ -9,7 +9,7 @@ Requisitos: Node.js 24+, npm e Expo Go no Android/iOS.
     npm ci
     npm start
 
-Leia o QR code com o Expo Go. Use **Abrir demonstração local** para conferir os CRUDs e o SQLite sem configuração de nuvem. Para cumprir a demonstração de autenticação e Firestore, configure o Firebase abaixo.
+Leia o QR code com o Expo Go. Use **Abrir demonstração com exemplos** para conferir os CRUDs e o SQLite sem configuração de nuvem. Esse modo carrega um projeto, um glossário e três termos jurídicos ilustrativos no aparelho; não cria conta nem envia os exemplos ao Firestore. Para demonstrar autenticação e Firestore, configure o Firebase abaixo e crie seus registros na sua conta.
 
 ## Configurar Firebase
 

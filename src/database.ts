@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import * as Crypto from 'expo-crypto';
+import { makeDemoRecords } from './demo-data';
 import type { DataRecord, EntityType, PendingMutation, StoredRecord } from './types';
 
 type DbRow = { data: string; sync_status: 'pending' | 'synced' };
@@ -17,6 +18,7 @@ async function database() {
         'CREATE INDEX IF NOT EXISTS records_visible ON records(owner_id, entity, deleted_at, updated_at DESC);',
         'CREATE TABLE IF NOT EXISTS outbox (id INTEGER PRIMARY KEY AUTOINCREMENT, owner_id TEXT NOT NULL, entity TEXT NOT NULL, entity_id TEXT NOT NULL, data TEXT NOT NULL, created_at TEXT NOT NULL, UNIQUE(owner_id, entity, entity_id));',
         'CREATE INDEX IF NOT EXISTS outbox_order ON outbox(owner_id, id);',
+        'CREATE TABLE IF NOT EXISTS app_metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);',
         'CREATE TABLE IF NOT EXISTS tm_datasets (id TEXT PRIMARY KEY, corpus TEXT NOT NULL, version TEXT NOT NULL, source TEXT NOT NULL, target TEXT NOT NULL, imported_pairs INTEGER NOT NULL, imported_at TEXT NOT NULL);',
         'CREATE TABLE IF NOT EXISTS tm_pairs (id INTEGER PRIMARY KEY AUTOINCREMENT, dataset_id TEXT NOT NULL REFERENCES tm_datasets(id) ON DELETE CASCADE, source_text TEXT NOT NULL, target_text TEXT NOT NULL, normalized TEXT NOT NULL);',
         'CREATE INDEX IF NOT EXISTS tm_pairs_lookup ON tm_pairs(normalized, dataset_id);',
@@ -34,6 +36,38 @@ export async function listRecords(ownerId: string, entity: EntityType): Promise<
     ownerId, entity,
   );
   return rows.map((row) => ({ data: JSON.parse(row.data) as DataRecord, syncStatus: row.sync_status }));
+}
+
+export async function ensureDemoData(ownerId: string) {
+  const db = await database();
+  const seedKey = 'demo-records-v1:' + ownerId;
+  let inserted = false;
+
+  await db.withTransactionAsync(async () => {
+    const marker = await db.getFirstAsync<{ value: string }>(
+      'SELECT value FROM app_metadata WHERE key = ?', seedKey,
+    );
+    if (marker) return;
+
+    const existing = await db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) AS count FROM records WHERE owner_id = ?', ownerId,
+    );
+    if (existing?.count) {
+      await db.runAsync('INSERT INTO app_metadata(key, value) VALUES(?, ?)', seedKey, 'existing-data-preserved');
+      return;
+    }
+
+    for (const { entity, data } of makeDemoRecords()) {
+      await db.runAsync(
+        'INSERT INTO records(owner_id, entity, record_id, data, updated_at, deleted_at, sync_status) VALUES(?, ?, ?, ?, ?, ?, \'synced\')',
+        ownerId, entity, data.id, JSON.stringify(data), data.updatedAt, data.deletedAt,
+      );
+    }
+    await db.runAsync('INSERT INTO app_metadata(key, value) VALUES(?, ?)', seedKey, 'loaded');
+    inserted = true;
+  });
+
+  return inserted;
 }
 
 export async function saveLocalRecord(ownerId: string, entity: EntityType, data: DataRecord) {
