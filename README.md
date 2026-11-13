@@ -9,7 +9,7 @@ Requisitos: Node.js 24+, npm e Expo Go no Android/iOS.
     npm ci
     npm start
 
-Leia o QR code com o Expo Go. Use **Abrir demonstração com exemplos** para conferir os CRUDs e o SQLite sem configuração de nuvem. Esse modo carrega um projeto, um glossário e três termos jurídicos ilustrativos no aparelho; não cria conta nem envia os exemplos ao Firestore. Para demonstrar autenticação e Firestore, configure o Firebase abaixo e crie seus registros na sua conta.
+Leia o QR code com o Expo Go. Na primeira entrada em um aparelho sem dados de demonstração, use **Abrir demonstração com exemplos** para conferir os CRUDs e o SQLite sem configuração de nuvem. Esse modo carrega um projeto, um glossário e três termos jurídicos ilustrativos; não cria conta nem envia os exemplos ao Firestore. Para demonstrar autenticação e Firestore, configure o Firebase abaixo e crie seus registros na sua conta.
 
 ## Configurar Firebase
 
@@ -41,6 +41,10 @@ Os valores de configuração do cliente Firebase identificam o projeto, mas não
 | SQLite local | Tabelas de registros, fila de sincronização e pares TMX |
 | Offline e sincronização | CRUD local imediato; fila idempotente enviada quando a conexão volta |
 | API externa pertinente | Catálogo OPUS, amostra TMX local e busca de correspondências MyMemory |
+
+## Guia para apresentar e defender o projeto
+
+Consulte [docs/GUIA-DE-APRESENTACAO.md](docs/GUIA-DE-APRESENTACAO.md) para ver a arquitetura, a integração com Authentication e Firestore, o funcionamento do SQLite e da sincronização, o fluxo OPUS/TMX/MyMemory, o roteiro de demonstração e respostas para perguntas prováveis do professor.
 
 ## Demonstração para a apresentação
 

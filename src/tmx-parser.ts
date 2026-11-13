@@ -64,7 +64,7 @@ export function createTmxCollector(source: string, target: string, maxPairs: num
     else if (name === 'tu' && variants) {
       const from = variants.filter((item) => languageMatch(item.lang, source));
       const to = variants.filter((item) => languageMatch(item.lang, target));
-      if (from.length === 1 && to.length === 1 && from[0].text.trim() && to[0].text.trim()) {
+      if (pairs.length < maxPairs && from.length === 1 && to.length === 1 && from[0].text.trim() && to[0].text.trim()) {
         pairs.push({ source: from[0].text.trim(), target: to[0].text.trim() });
       }
       variants = null;

@@ -17,11 +17,14 @@ test('lê segmentos, decodifica entidades e escolhe o idioma regional exato', ()
   assert.deepEqual(parser.pairs, [{ source: 'Health & care', target: 'Português do Brasil' }]);
 });
 
-test('processa lotes parciais e para no limite da amostra', () => {
-  const parser = createTmxCollector('en', 'pt-BR', 1);
-  parser.write(header + unit('Good morning', 'Bom dia'));
+test('processa lotes e nunca ultrapassa o limite da amostra', () => {
+  const parser = createTmxCollector('en', 'pt-BR', 2);
+  parser.write(header + unit('Good morning', 'Bom dia') + unit('Good night', 'Boa noite') + unit('Thank you', 'Obrigado'));
   assert.equal(parser.done(), true);
-  assert.deepEqual(parser.pairs, [{ source: 'Good morning', target: 'Bom dia' }]);
+  assert.deepEqual(parser.pairs, [
+    { source: 'Good morning', target: 'Bom dia' },
+    { source: 'Good night', target: 'Boa noite' },
+  ]);
 });
 
 test('não inclui placeholders inline e recusa XML quebrado ou DTD interna', () => {

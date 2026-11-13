@@ -137,9 +137,9 @@ export async function importOpusSample(dataset: OpusDataset, maxPairs = 1000) {
       if (zipRef.current) zipRef.current.push(chunk, false);
       else if (gzip) gzip.push(chunk, false);
       else xml(chunk);
-      if (collector.done() && !zipRef.current) {
+      if (collector.done()) {
         stopped = true;
-        await reader.cancel();
+        await reader.cancel().catch(() => undefined);
       }
     }
   } catch (cause) {
