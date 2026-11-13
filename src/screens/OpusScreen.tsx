@@ -7,7 +7,8 @@ import { theme } from '../theme';
 
 export function OpusScreen() {
   const [source, setSource] = useState('en');
-  const [target, setTarget] = useState('pt-BR');
+  // OPUS indexes Portuguese as `pt`; regional tags such as `pt-BR` return no rows.
+  const [target, setTarget] = useState('pt');
   const [corpus, setCorpus] = useState('');
   const [phrase, setPhrase] = useState('');
   const [datasets, setDatasets] = useState<OpusDataset[]>([]);
