@@ -46,6 +46,8 @@ Os valores de configuração do cliente Firebase identificam o projeto, mas não
 
 Consulte [docs/GUIA-DE-APRESENTACAO.md](docs/GUIA-DE-APRESENTACAO.md) para ver a arquitetura, a integração com Authentication e Firestore, o funcionamento do SQLite e da sincronização, o fluxo OPUS/TMX/MyMemory, o roteiro de demonstração e respostas para perguntas prováveis do professor.
 
+Para estudar a implementação em profundidade, consulte também [docs/GUIA-LEITURA-DO-CODIGO.md](docs/GUIA-LEITURA-DO-CODIGO.md). Ele percorre os arquivos-fonte e explica passo a passo como SQLite, outbox, Firebase Authentication e Firestore trabalham juntos.
+
 ## Demonstração para a apresentação
 
 1. Crie conta e cadastre um projeto, um glossário e um termo.

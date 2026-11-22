@@ -2,6 +2,8 @@
 
 Este guia explica o aplicativo, os requisitos atendidos, a configuração do Firebase, o armazenamento offline, a sincronização e as APIs. Ele serve para preparar a demonstração em grupo e as respostas individuais. Use-o junto com o código: conhecer os arquivos e conseguir apontar o fluxo durante a apresentação ajuda a defender as decisões técnicas.
 
+Para estudar a implementação arquivo por arquivo, use também o [Guia de leitura e defesa do código](GUIA-LEITURA-DO-CODIGO.md). O foco dele é explicar o caminho concreto de uma alteração: formulário, validação, SQLite, outbox, Firebase Authentication e Firestore.
+
 ## 1. Resumo do projeto
 
 O **Léxica Mobile** é um caderno de trabalho para tradutores. Ele organiza projetos de tradução, glossários e decisões terminológicas. O aplicativo foi construído com React Native e Expo. Cada alteração é gravada primeiro no SQLite do aparelho; quando existe uma conta Firebase autenticada e a conexão está disponível, o usuário pode sincronizar os registros com o Cloud Firestore. O app também consulta o catálogo OPUS, importa uma amostra TMX limitada para uso offline e oferece uma consulta online separada pelo MyMemory.
@@ -122,6 +124,10 @@ flowchart TD
 ```
 
 Uma separação importante: os registros de Projetos/Glossários/Termos são sincronizados com Firestore. As amostras OPUS/TMX são mantidas no SQLite do aparelho e **não** são sincronizadas para a conta Firestore.
+
+### Como explicar a integração em 30 segundos
+
+“Firebase Authentication identifica a conta e fornece o UID. A tela usa esse UID para ler e gravar os registros no SQLite local. Cada gravação também atualiza uma fila chamada outbox. Quando a rede está disponível, a sincronização puxa documentos remotos que não têm alteração local pendente e envia as operações da outbox para o caminho users/UID/entidade/id no Firestore. Só removemos cada operação da fila depois de confirmar o setDoc. Por isso o app continua utilizável offline e tenta atualizar a nuvem depois.”
 
 ## 5. Firebase em detalhe
 
@@ -360,6 +366,8 @@ Não. São dados fictícios/ilustrativos de demonstração local. O modo exemplo
 O repositório tem testes de validação dos formulários e do parser TMX, além de checagem TypeScript e exportação do bundle Android. Na apresentação, complementem isso com o teste real no celular: login, Firestore, offline, retorno da rede e API.
 
 ## 11. Mapa dos arquivos principais
+
+Para a explicação do papel e das funções de cada arquivo, consulte [docs/GUIA-LEITURA-DO-CODIGO.md](GUIA-LEITURA-DO-CODIGO.md). A tabela abaixo é o mapa rápido para localizar o código durante as perguntas.
 
 | Arquivo | Responsabilidade |
 |---|---|
