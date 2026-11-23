@@ -2,14 +2,51 @@
 
 Aplicativo React Native para profissionais de tradução. O projeto reaproveita o domínio de glossários, termos, idiomas e memórias OPUS do trabalho de Métodos Ágeis e acrescenta os requisitos mobile do Projeto N2.
 
-## Executar
+## Executar no celular
 
 Requisitos: Node.js 24+, npm e Expo Go no Android/iOS.
 
-    npm ci
-    npm start
+```powershell
+npm ci
+npm start
+```
 
 Leia o QR code com o Expo Go. Na primeira entrada em um aparelho sem dados de demonstração, use **Abrir demonstração com exemplos** para conferir os CRUDs e o SQLite sem configuração de nuvem. Esse modo carrega um projeto, um glossário e três termos jurídicos ilustrativos; não cria conta nem envia os exemplos ao Firestore. Para demonstrar autenticação e Firestore, configure o Firebase abaixo e crie seus registros na sua conta.
+
+## Apresentar no navegador com formato mobile
+
+O app também pode ser apresentado pelo navegador com a interface em formato de celular.
+
+### Iniciar a versão Web no Windows
+
+1. Instale Node.js 24 ou superior. Abra o PowerShell na pasta do projeto.
+2. Instale as dependências (na primeira execução ou depois de atualizar o projeto):
+
+   ```powershell
+   npm ci
+   ```
+
+3. Para usar login e Firestore, copie `.env.example` para `.env` e preencha os cinco valores `EXPO_PUBLIC_FIREBASE_*` indicados na seção Firebase. Para abrir a demonstração local, esse arquivo é opcional.
+4. Gere o build Web e inicie o servidor local:
+
+   ```powershell
+   npm run web
+   ```
+
+5. Enquanto o terminal continuar aberto, acesse **http://localhost:4178** no navegador. Em uma janela larga, o app aparece centralizado numa moldura de celular; em janela estreita, ocupa a tela. O botão **Abrir demonstração com exemplos** permite experimentar sem uma conta Firebase.
+
+O comando `npm run web` exporta o app para a pasta `dist` e serve esse build localmente. Aguarde a mensagem de que o Lexica Mobile Web está disponível antes de abrir o endereço. Para parar o servidor, volte ao terminal e pressione **Ctrl+C**. Se mudar `.env`, pare o processo e rode `npm run web` novamente para gerar um build com a configuração atualizada.
+
+Se a porta 4178 já estiver em uso, escolha outra no PowerShell e abra o endereço correspondente:
+
+```powershell
+$env:PORT = 4179
+npm run web
+```
+
+Depois acesse **http://localhost:4179**. Para o login Firebase em um domínio diferente, autorize o domínio em **Authentication → Settings → Authorized domains**.
+
+Na versão Web, SQLite usa WebAssembly e guarda os dados no perfil do navegador. Esse armazenamento é independente do SQLite do celular. Para levar os registros da conta entre aparelhos, entre na mesma conta Firebase e sincronize com o Firestore. O servidor local já inclui os cabeçalhos exigidos pelo SQLite Web. Para hospedar a pasta `dist` em outro serviço, configure **Cross-Origin-Embedder-Policy: credentialless** e **Cross-Origin-Opener-Policy: same-origin**.
 
 ## Configurar Firebase
 
@@ -34,7 +71,7 @@ Os valores de configuração do cliente Firebase identificam o projeto, mas não
 
 | Requisito | Implementação |
 | --- | --- |
-| React Native | Expo + React Native, sem interface web adaptada |
+| Interface | Expo + React Native, executável no celular e no navegador com apresentação mobile |
 | Três CRUDs completos | Projetos, Glossários e Termos: criar, listar, editar e excluir |
 | Firebase Authentication | Cadastro e acesso por e-mail/senha; sessão persistida no aparelho |
 | Firestore | Dados da conta em subcoleções isoladas por UID |
@@ -64,6 +101,8 @@ Para estudar a implementação em profundidade, consulte também [docs/GUIA-LEIT
 - src/database.ts: SQLite do aparelho, fila outbox, tombstones e memórias TMX.
 - src/sync.ts: leitura e envio das subcoleções Firestore do usuário.
 - src/firebase.ts: Firebase Authentication persistente e Firestore.
+- src/components/AppViewport.tsx: mantém a área do app em formato de celular no navegador.
+- metro.config.cjs e scripts/serve-web.mjs: habilitam SQLite Web e servem a prévia local com os cabeçalhos necessários.
 - src/opus.ts e src/tmx-parser.ts: catálogo OPUS, download limitado, parser de amostra TMX/GZIP/ZIP e consulta MyMemory.
 - firestore.rules: isolamento dos documentos por UID.
 - DESIGN.md e UX-CONTRACT.md: identidade visual e comportamento offline dos fluxos.
@@ -75,4 +114,5 @@ O OPUS e o MyMemory precisam de internet. A consulta MyMemory tem limite de 500 
     npm run check
     npm test
     npm run export:android
+    npm run export:web
 

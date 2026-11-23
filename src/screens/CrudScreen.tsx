@@ -61,10 +61,14 @@ export function CrudScreen({
   function closeForm() {
     const changed = Object.values(draft).some((value) => value.trim());
     if (changed) {
-      Alert.alert('Descartar alterações?', 'O que você digitou ainda não foi salvo.', [
-        { text: 'Continuar editando', style: 'cancel' },
-        { text: 'Descartar', style: 'destructive', onPress: () => setFormOpen(false) },
-      ]);
+      if (Platform.OS === 'web') {
+        if (globalThis.confirm('O que você digitou ainda não foi salvo. Deseja descartar as alterações?')) setFormOpen(false);
+      } else {
+        Alert.alert('Descartar alterações?', 'O que você digitou ainda não foi salvo.', [
+          { text: 'Continuar editando', style: 'cancel' },
+          { text: 'Descartar', style: 'destructive', onPress: () => setFormOpen(false) },
+        ]);
+      }
     } else setFormOpen(false);
   }
 
@@ -90,16 +94,22 @@ export function CrudScreen({
 
   function remove(record: DataRecord) {
     const label = String(record[definition.headlineKey] ?? 'este registro');
-    Alert.alert('Excluir registro?', '“' + label + '” será removido das listas e a exclusão será sincronizada com a nuvem.', [
-      { text: 'Cancelar', style: 'cancel' },
-      { text: 'Excluir', style: 'destructive', onPress: () => {
+    const confirmRemoval = () => {
         void deleteLocalRecord(ownerId, definition.type, record).then(async () => {
           setNotice('Registro excluído neste aparelho; a nuvem será atualizada na próxima sincronização.');
           await refresh();
           onChanged();
         }).catch(() => setLoadError('Não foi possível excluir o registro. Tente novamente.'));
-      } },
-    ]);
+    };
+    const message = '“' + label + '” será removido das listas e a exclusão será sincronizada com a nuvem.';
+    if (Platform.OS === 'web') {
+      if (globalThis.confirm(message)) confirmRemoval();
+    } else {
+      Alert.alert('Excluir registro?', message, [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Excluir', style: 'destructive', onPress: confirmRemoval },
+      ]);
+    }
   }
 
   function displayValue(value: unknown) {

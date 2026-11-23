@@ -5,6 +5,7 @@
   "type": "module",
   "main": "index.ts",
   "dependencies": {
+    "@expo/metro-runtime": "~58.0.17",
     "@firebase/auth": "^1.13.9",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~58.0.23",
@@ -15,7 +16,9 @@
     "fflate": "^0.8.3",
     "firebase": "^13.2.0",
     "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-native": "0.88.1",
+    "react-native-web": "^0.21.4",
     "saxes": "^6.0.0"
   },
   "devDependencies": {
@@ -29,11 +32,13 @@
   },
   "scripts": {
     "start": "expo start",
+    "web": "npm run export:web && node scripts/serve-web.mjs",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "check": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "export:android": "expo export --platform android"
+    "export:android": "expo export --platform android",
+    "export:web": "expo export --platform web"
   },
   "private": true
 }

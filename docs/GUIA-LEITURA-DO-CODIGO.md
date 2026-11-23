@@ -170,6 +170,12 @@ A configuração EXPO_PUBLIC_FIREBASE_* fica no bundle do cliente por necessidad
 
 É importante não atribuir toda sincronização a um único “modo automático”: há tentativa por eventos do sistema, mas também existe o botão manual. Uma tentativa pode ainda deixar pendências, como quando há mais de 100 operações.
 
+#### src/components/AppViewport.tsx
+
+Define a área visual do app para os dois ambientes. No Android, o componente usa o espaço disponível normalmente. Na web, uma janela estreita continua ocupando toda a tela; em uma janela larga, o conteúdo é centralizado em uma moldura com largura máxima de 460 px e altura máxima de 920 px. Isso permite apresentar o mesmo fluxo mobile pelo navegador sem transformar a interface em um layout desktop.
+
+O componente usa useWindowDimensions para acompanhar redimensionamento e Platform.OS para aplicar estilos web somente no navegador. Ele não altera navegação, dados, SQLite, autenticação nem sincronização.
+
 #### src/firebase.ts
 
 Centraliza a criação do cliente Firebase. Lê as cinco variáveis públicas EXPO_PUBLIC_FIREBASE_*. firebaseConfigured indica se todas estão preenchidas.
@@ -320,9 +326,17 @@ O repositório não tem testes automatizados de ponta a ponta com Firebase Emula
 
 package.json declara dependências e comandos npm. package-lock.json fixa as versões resolvidas para npm ci. Expo e React Native formam a plataforma; expo-sqlite fornece SQLite; Firebase SDK implementa Auth/Firestore; AsyncStorage persiste a sessão; expo-network observa conectividade; fflate descompacta; saxes interpreta TMX; expo-crypto cria UUID.
 
+Para web, react-dom e react-native-web mapeiam a aplicação React Native para elementos de navegador, e @expo/metro-runtime dá suporte ao runtime web do Expo. O comando npm run web primeiro executa export:web para gerar os arquivos estáticos em dist e depois inicia o servidor local de apresentação. npm run export:web apenas gera os arquivos, sem iniciar servidor.
+
 #### app.json
 
 Configura nome, slug, orientação, ícones, identificador Android, suporte a tablet e plugin Expo SQLite. É configuração de app Expo, não a configuração de projeto Firebase.
+
+A seção web seleciona Metro como empacotador e define o favicon. metro.config.cjs estende a configuração padrão do Expo para reconhecer arquivos .wasm, necessários ao SQLite Web. O SQLite no navegador precisa de suporte WASM e de cabeçalhos de isolamento de origem cruzada; scripts/serve-web.mjs fornece esses cabeçalhos para a apresentação local. Para hospedar o build em outro serviço, a hospedagem também deve enviar Cross-Origin-Embedder-Policy: credentialless e Cross-Origin-Opener-Policy: same-origin em todas as respostas relevantes.
+
+scripts/serve-web.mjs é um servidor HTTP pequeno para servir a pasta dist. Ele define o tipo MIME de arquivos WebAssembly, envia cabeçalhos COEP/COOP, serve index.html em caminhos de navegação do app e bloqueia caminhos que tentem sair da pasta publicada. A porta padrão é 4178; a variável PORT permite escolher outra. Ele não é um backend e não acessa Firebase em nome do app: a aplicação web continua usando o SDK cliente e as regras do Firebase.
+
+No navegador, o SQLite Web guarda dados no armazenamento do perfil daquele navegador. Ele não compartilha automaticamente o banco SQLite do Android. A sincronização pelo Firestore é o mecanismo para levar os registros da conta entre instalações, quando o usuário entra na mesma conta e a conexão funciona.
 
 #### .env.example e .env
 
@@ -438,5 +452,8 @@ Cada integrante deve conseguir apontar estes arquivos no repositório:
 | OPUS e MyMemory | src/opus.ts |
 | XML TMX | src/tmx-parser.ts |
 | Componentes visuais | src/components/UI.tsx |
+| Moldura mobile apresentada na web | src/components/AppViewport.tsx |
+| SQLite Web, WASM e configuração Metro | metro.config.cjs |
+| Servidor local com cabeçalhos para SQLite Web | scripts/serve-web.mjs |
 
 O melhor treino é uma pessoa escolher uma ação e outra seguir a cadeia pelos arquivos. Por exemplo: “editar um termo offline” deve levar do formulário em CrudScreen, pela validação, ao saveLocalRecord, à outbox e finalmente ao push em sync.ts quando a conexão volta.

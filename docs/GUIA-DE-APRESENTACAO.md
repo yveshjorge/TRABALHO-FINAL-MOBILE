@@ -31,9 +31,38 @@ O enunciado também prevê avaliação individual. A nota de cada integrante dep
 ### Requisitos
 
 - Node.js 24 ou superior e npm.
-- Expo Go instalado no Android ou iOS.
-- Computador e celular na mesma rede Wi-Fi, normalmente.
+- Expo Go instalado no Android ou iOS, ou um navegador atualizado para a apresentação Web.
+- Para Expo Go, computador e celular na mesma rede Wi-Fi, normalmente. A apresentação Web no próprio computador usa localhost.
 - Para os recursos de nuvem, um projeto Firebase configurado e os cinco valores de configuração no arquivo `.env` local.
+
+### Apresentar no navegador com formato mobile
+
+No Windows, abra PowerShell na pasta do repositório. Na primeira execução, instale as dependências e, se for demonstrar login e sincronização na nuvem, configure `.env` a partir de `.env.example` com os valores Firebase:
+
+```powershell
+npm ci
+```
+
+Inicie o build e o servidor de apresentação:
+
+```powershell
+npm run web
+```
+
+Aguarde no terminal a mensagem de que o Lexica Mobile Web está disponível e abra **http://localhost:4178** no navegador. O app fica em uma moldura de celular centralizada em monitores largos e ocupa a largura do navegador em telas estreitas. Para encerrar, volte ao terminal e pressione `Ctrl+C`; para alterar `.env`, encerre e execute `npm run web` outra vez para reconstruir com os valores atualizados.
+
+Se a porta padrão já estiver ocupada, inicie em outra porta no PowerShell e use o endereço exibido:
+
+```powershell
+$env:PORT = 4179
+npm run web
+```
+
+Abra **http://localhost:4179** nesse exemplo. O modo **Abrir demonstração com exemplos** funciona sem `.env` e permanece local. Login e sincronização exigem a configuração Firebase e uma conta; para domínio diferente de localhost, adicione-o em **Firebase Authentication → Settings → Authorized domains**.
+
+No navegador, SQLite é implementado por WebAssembly e os dados ficam no armazenamento do perfil do navegador. No aparelho, é o SQLite nativo do Expo. Os bancos locais são independentes, mas as instalações podem acessar o mesmo Firestore quando entram na mesma conta e sincronizam.
+
+Em uma hospedagem diferente, configure **Cross-Origin-Embedder-Policy: credentialless** e **Cross-Origin-Opener-Policy: same-origin** no servidor. Para autenticar em domínio público, adicione o domínio aos domínios autorizados do Firebase Authentication.
 
 ### Iniciar o aplicativo
 
@@ -286,7 +315,7 @@ As mensagens de erro de login e sincronização são apresentadas sem apagar o c
 
 ### Limitações que é melhor explicar com transparência
 
-- O projeto é apresentado no Expo Go; não há APK de produção gerado pelo comando de exportação.
+- O projeto pode ser apresentado no Expo Go ou no navegador com npm run web; npm run export:android exporta o bundle e não gera APK de produção.
 - Firebase real precisa de `.env`, provedor e Firestore configurados, além das regras publicadas.
 - A outbox processa lotes de até 100 operações por sincronização.
 - A sincronização não é um sistema colaborativo com resolução avançada de conflito; usa pendência local como prioridade e, sem pendência, aplica o remoto.

@@ -7,6 +7,7 @@ import { AuthScreen } from './src/screens/AuthScreen';
 import { CrudScreen } from './src/screens/CrudScreen';
 import { OpusScreen } from './src/screens/OpusScreen';
 import { Button, Notice } from './src/components/UI';
+import { AppViewport } from './src/components/AppViewport';
 import { auth, cloud, firebaseConfigured } from './src/firebase';
 import { entityDefinitions } from './src/definitions';
 import { synchronize } from './src/sync';
@@ -116,10 +117,10 @@ export default function App() {
   }
 
   if (!authReady) {
-    return <View style={styles.loading}><ActivityIndicator color={theme.color.coral} /><Text style={styles.loadingText}>Carregando sua sessão…</Text></View>;
+    return <AppViewport><View style={styles.loading}><ActivityIndicator color={theme.color.coral} /><Text style={styles.loadingText}>Carregando sua sessão…</Text></View></AppViewport>;
   }
 
-  if (!account) return <><StatusBar style="dark" /><AuthScreen auth={auth} configured={firebaseConfigured} onDemo={openDemo} /></>;
+  if (!account) return <AppViewport><><StatusBar style="dark" /><AuthScreen auth={auth} configured={firebaseConfigured} onDemo={openDemo} /></></AppViewport>;
 
   const activeLabel = syncState === 'syncing'
     ? 'Sincronizando…'
@@ -134,7 +135,8 @@ export default function App() {
           : 'Modo local';
 
   return (
-    <SafeAreaView style={styles.app}>
+    <AppViewport>
+      <SafeAreaView style={styles.app}>
       <StatusBar style="dark" />
       <View style={styles.topbar}>
         <View style={styles.brand}>
@@ -180,7 +182,8 @@ export default function App() {
           </Pressable>
         ))}
       </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </AppViewport>
   );
 }
 
